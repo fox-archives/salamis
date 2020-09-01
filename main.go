@@ -12,6 +12,12 @@ import (
 	"github.com/pelletier/go-toml"
 )
 
+// Group is a group of extensions
+type Group struct {
+	Name string   `toml:"name"`
+	Use  []string `toml:"use"`
+}
+
 // Extension gives information about a particular vscode extension
 type Extension struct {
 	Name string   `toml:"name"`
@@ -22,6 +28,7 @@ type Extension struct {
 type Config struct {
 	Version    string      `toml:"version"`
 	Extensions []Extension `toml:"extensions"`
+	Groups     []Group     `toml:"groups"`
 }
 
 func readConfig() Config {
@@ -40,8 +47,12 @@ func readConfig() Config {
 
 func getVscodeExtensions() []string {
 	cmd := exec.Command("code", "--list-extensions")
+
 	cmd.Stderr = os.Stderr
+	fmt.Println("h")
 	stdout, err := cmd.Output()
+	fmt.Println("thing")
+
 	if err != nil {
 		panic(err)
 	}
@@ -95,6 +106,14 @@ Commands:
 	if command == "generate" {
 		config := readConfig()
 
+		if err := os.MkdirAll("workspaces", 0755); err != nil && !os.IsExist(err) {
+			panic(err)
+		}
+		if err := os.MkdirAll("aggregations", 0755); err != nil && !os.IsExist(err) {
+			panic(err)
+		}
+
+		// generate workspaces
 		for _, extension := range config.Extensions {
 			fmt.Printf("EXTENSION: %s\n", extension.Name)
 
@@ -113,6 +132,9 @@ Commands:
 				fmt.Println(string(stdout))
 			}
 		}
+
+		// generate every combination of tags
+
 	} else if command == "launch" {
 		ensureLength(args, 2, "Must pass in a workspace name")
 		workspaceName := args[1]
@@ -167,6 +189,7 @@ Commands:
 		}
 
 	} else if command == "check" {
+
 		extensions := getVscodeExtensions()
 		config := readConfig()
 
@@ -203,6 +226,36 @@ Commands:
 				fmt.Printf("NOT GLOBAL: %s\n", spartaExtension.Name)
 			}
 		}
+
+		fmt.Println()
+		fmt.Println("Extensions that don't have any tags")
+		for _, extension := range config.Extensions {
+			if len(extension.Tags) == 0 {
+				fmt.Printf("NO TAGS: %s\n", extension.Name)
+			}
+		}
+
+		fmt.Println()
+		fmt.Println("Extensions tags that aren't in a group")
+		for _, extension := range config.Extensions {
+			for _, tag := range extension.Tags {
+				inGroup := false
+			g:
+				for _, group := range config.Groups {
+					for _, usedTag := range group.Use {
+						if usedTag == tag {
+							inGroup = true
+							continue g
+						}
+					}
+
+				}
+				if !inGroup {
+					fmt.Printf("TAG NOT USED: %s\n", tag)
+				}
+			}
+		}
+
 	} else {
 		log.Fatalln("Unknown Command. Exiting")
 	}

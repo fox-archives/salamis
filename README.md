@@ -16,11 +16,20 @@ Launch Command:
 
 ```sh
 sparta launch --tag core --tag javascript
+# is an abstraction over
+code --extensions-dir extensions/core-javascript
 ```
 
 Configuration File:
 
 ```toml
+[[groups]]
+name = "JavaScript"
+description = "JavaScript / TypeScript Development Environment"
+use = [
+	"core", "javascript"
+]
+
 [[extensions]]
 name = "editorconfig.editorconfig"
 tags = [
