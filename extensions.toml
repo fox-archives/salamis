@@ -1,19 +1,19 @@
 version = "1"
 
 [[extensions]]
-name = "2gua.rainbow-brackets-0.0.6"
+name = "2gua.rainbow-brackets"
 tags = [
 "general"
 ]
 
 [[extensions]]
-name = "aaron-bond.better-comments-2.1.0"
+name = "aaron-bond.better-comments"
 tags = [
 "general"
 ]
 
 [[extensions]]
-name = "adacore.ada-21.0.16"
+name = "adacore.ada"
 tags = [
 "ada"
 ]
