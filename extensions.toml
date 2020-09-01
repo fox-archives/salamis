@@ -13,10 +13,6 @@ version = "1"
   tags = []
 
 [[extensions]]
-  name = "ban.spellright"
-  tags = []
-
-[[extensions]]
   name = "bierner.markdown-mermaid"
   tags = []
 
@@ -161,6 +157,10 @@ version = "1"
   tags = []
 
 [[extensions]]
+  name = "rebornix.ruby"
+  tags = []
+
+[[extensions]]
   name = "redhat.vscode-yaml"
   tags = []
 
@@ -221,6 +221,10 @@ version = "1"
   tags = []
 
 [[extensions]]
+  name = "wingrunr21.vscode-ruby"
+  tags = []
+
+[[extensions]]
   name = "xyz.local-history"
   tags = []
 
@@ -230,8 +234,4 @@ version = "1"
 
 [[extensions]]
   name = "yzhang.markdown-all-in-one"
-  tags = []
-
-[[extensions]]
-  name = ""
   tags = []

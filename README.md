@@ -1,6 +1,6 @@
 # sparta
 
-Contextual management of vscode extensions
+Contextual vscode extension management
 
 ## Problem
 

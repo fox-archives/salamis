@@ -12,6 +12,41 @@ import (
 	"github.com/pelletier/go-toml"
 )
 
+// Extension gives information about a particular vscode extension
+type Extension struct {
+	Name string   `toml:"name"`
+	Tags []string `toml:"tags"`
+}
+
+// Config gives information about the whole configuration file
+type Config struct {
+	Version    string      `toml:"version"`
+	Extensions []Extension `toml:"extensions"`
+}
+
+func readConfig() Config {
+	var config Config
+
+	configRaw, err := ioutil.ReadFile(filepath.Join("extensions.toml"))
+	if err != nil {
+		panic(err)
+	}
+	if err = toml.Unmarshal(configRaw, &config); err != nil {
+		panic(err)
+	}
+
+	return config
+}
+
+func getVscodeExtensions() []string {
+	cmd := exec.Command("code", "--list-extensions")
+	cmd.Stderr = os.Stderr
+	stdout, err := cmd.Output()
+	if err != nil {
+		panic(err)
+	}
+	return strings.Split(string(stdout), "\n")
+}
 func ensureLength(arr []string, minLength int, message string) {
 	if len(arr) < minLength {
 		log.Fatalln(message)
@@ -27,18 +62,6 @@ func contains(arr []string, query string) bool {
 	return false
 }
 
-// Extension gives information about a particular vscode extension
-type Extension struct {
-	Name string   `toml:"name"`
-	Tags []string `toml:"tags"`
-}
-
-// Config gives information about the whole configuration file
-type Config struct {
-	Version    string      `toml:"version"`
-	Extensions []Extension `toml:"extensions"`
-}
-
 func main() {
 	args := os.Args[1:]
 
@@ -46,19 +69,23 @@ func main() {
 		fmt.Println(`sparta
 
 Description:
-    Contextual management of vscode extensions
+  Contextual vscode extension management
 
 Commands:
-	 init
-    initiates an 'extensions.toml' folder that contains all extensions for tagging
-    generate
+  init
+    Initiates an 'extensions.toml' folder that contains all extensions for tagging
+
+  generate
     Generates all extension folders to be used by vscode
 
-	 Clear
-	 Clears all workspaces
+  clear
+    Removes all downloaded extensions from their workspaces
 
-    launch [workspace]
-    launches a particular workspace in vscode`)
+  check
+    Prints all extensions mismatches between default globally installed and ones defined in extensions.toml
+
+  launch [workspace]
+    Launches a particular workspace in vscode`)
 		os.Exit(0)
 	}
 
@@ -66,15 +93,7 @@ Commands:
 
 	command := args[0]
 	if command == "generate" {
-		var config Config
-
-		configRaw, err := ioutil.ReadFile(filepath.Join("extensions.toml"))
-		if err != nil {
-			panic(err)
-		}
-		if err = toml.Unmarshal(configRaw, &config); err != nil {
-			panic(err)
-		}
+		config := readConfig()
 
 		for _, extension := range config.Extensions {
 			fmt.Printf("EXTENSION: %s\n", extension.Name)
@@ -114,14 +133,12 @@ Commands:
 		var config Config
 		config.Version = "1"
 
-		cmd := exec.Command("code", "--list-extensions")
-		cmd.Stderr = os.Stderr
-		stdout, err := cmd.Output()
-		if err != nil {
-			panic(err)
-		}
-		extensions := strings.Split(string(stdout), "\n")
+		extensions := getVscodeExtensions()
 		for _, extension := range extensions {
+			if extension == "" {
+				continue
+			}
+
 			config.Extensions = append(config.Extensions, Extension{
 				Name: extension,
 			})
@@ -149,6 +166,43 @@ Commands:
 			panic(err)
 		}
 
+	} else if command == "check" {
+		extensions := getVscodeExtensions()
+		config := readConfig()
+
+		fmt.Println("Extensions that are installed globally, but could not be found local")
+		for _, globalExtension := range extensions {
+			isHere := false
+			for _, spartaExtension := range config.Extensions {
+				if globalExtension == spartaExtension.Name {
+					isHere = true
+					continue
+				}
+			}
+
+			if !isHere {
+				fmt.Printf("NOT LOCAL: %s\n", globalExtension)
+			}
+		}
+
+		fmt.Println()
+		fmt.Println("Extensions that are installed locally, but not globally")
+		for _, spartaExtension := range config.Extensions {
+			isGlobal := false
+
+			for _, globalExtension := range extensions {
+
+				if spartaExtension.Name == globalExtension {
+
+					isGlobal = true
+					continue
+				}
+			}
+
+			if !isGlobal {
+				fmt.Printf("NOT GLOBAL: %s\n", spartaExtension.Name)
+			}
+		}
 	} else {
 		log.Fatalln("Unknown Command. Exiting")
 	}
