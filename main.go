@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"io/ioutil"
-	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -13,34 +12,39 @@ import (
 	"github.com/otiai10/copy"
 )
 
+func contains(arr []string, query string) bool {
+	for _, el := range arr {
+		if el == query {
+			return true
+		}
+	}
+	return false
+}
+
 func main() {
 	args := os.Args[1:]
 
 	first := args[0]
 
-	if first == "copy" {
-		fmt.Println("copying current extensions")
+	if contains(args, "--help") || contains(args, "-h") {
+		fmt.Println(`sparta
 
-		home, err := os.UserHomeDir()
-		if err != nil {
-			log.Println("Home directory not found")
-			panic(err)
-		}
-		extensionsDir := filepath.Join(home, ".vscode/extensions")
-		wd, err := os.Getwd()
-		if err != nil {
-			log.Println("Could not get current working directory")
-			panic(err)
-		}
-		programDir := filepath.Join(wd, "extensions")
-		if err = copy.Copy(extensionsDir, programDir); err != nil {
-			log.Println("Could not copy extensions directory")
-			panic(err)
-		}
-	} else if first == "copy2" {
+Description:
+    Contextual management of vscode extensions
+
+Commands:
+    generate
+    Generates all extension folders to be used by vscode
+
+    lauch [workspace]
+    launches a particular workspace in vscode`)
+		os.Exit(0)
+	}
+
+	if first == "generate" {
 		type Extension struct {
-			Name string   `json:'name"`
-			Tags []string `json:"tags"`
+			Name string   `json:"name"`
+			Tags []string `json:"stags"`
 		}
 
 		type Extensions struct {
@@ -79,12 +83,7 @@ func main() {
 		}
 
 		if second == "create" {
-			wd, err := os.Getwd()
-			if err != nil {
-				panic(err)
-			}
-
-			if err := os.MkdirAll(filepath.Join(wd, "workspaces", name), os.ModePerm); err != nil {
+			if err := os.MkdirAll(filepath.Join("workspaces", name), os.ModePerm); err != nil {
 				panic(err)
 			}
 		} else if second == "delete" {
@@ -93,27 +92,19 @@ func main() {
 				os.Exit(1)
 			}
 
-			wd, err := os.Getwd()
-			if err != nil {
-				panic(err)
-			}
-
-			if err := os.RemoveAll(filepath.Join(wd, "workspaces", name)); err != nil {
+			if err := os.RemoveAll(filepath.Join("workspaces", name)); err != nil {
 				panic(err)
 			}
 		}
-	} else if first == "open" {
+	} else if first == "launch" {
 		name := args[1]
 
 		if name == "" {
 			fmt.Println("need to pass in a workspace name")
 			os.Exit(1)
 		}
-		wd, err := os.Getwd()
-		if err != nil {
-			panic(err)
-		}
-		extensionsDir := filepath.Join(wd, "workspaces", name)
+
+		extensionsDir := filepath.Join("workspaces", name)
 		cmd := exec.Command("code", "--extensions-dir", extensionsDir, ".")
 		stdout, err := cmd.Output()
 
