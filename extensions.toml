@@ -1,19 +1,237 @@
 version = "1"
 
 [[extensions]]
-name = "2gua.rainbow-brackets"
-tags = [
-"general"
-]
+  name = "2gua.rainbow-brackets"
+  tags = []
 
 [[extensions]]
-name = "aaron-bond.better-comments"
-tags = [
-"general"
-]
+  name = "aaron-bond.better-comments"
+  tags = []
 
 [[extensions]]
-name = "adacore.ada"
-tags = [
-"ada"
-]
+  name = "AdaCore.ada"
+  tags = []
+
+[[extensions]]
+  name = "ban.spellright"
+  tags = []
+
+[[extensions]]
+  name = "bierner.markdown-mermaid"
+  tags = []
+
+[[extensions]]
+  name = "bmalehorn.vscode-fish"
+  tags = []
+
+[[extensions]]
+  name = "bpruitt-goddard.mermaid-markdown-syntax-highlighting"
+  tags = []
+
+[[extensions]]
+  name = "bungcip.better-toml"
+  tags = []
+
+[[extensions]]
+  name = "christian-kohler.npm-intellisense"
+  tags = []
+
+[[extensions]]
+  name = "christian-kohler.path-intellisense"
+  tags = []
+
+[[extensions]]
+  name = "DavidAnson.vscode-markdownlint"
+  tags = []
+
+[[extensions]]
+  name = "dbaeumer.vscode-eslint"
+  tags = []
+
+[[extensions]]
+  name = "eamodio.gitlens"
+  tags = []
+
+[[extensions]]
+  name = "EditorConfig.EditorConfig"
+  tags = []
+
+[[extensions]]
+  name = "eg2.vscode-npm-script"
+  tags = []
+
+[[extensions]]
+  name = "esbenp.prettier-vscode"
+  tags = []
+
+[[extensions]]
+  name = "ExodiusStudios.comment-anchors"
+  tags = []
+
+[[extensions]]
+  name = "fknop.vscode-npm"
+  tags = []
+
+[[extensions]]
+  name = "formulahendry.auto-close-tag"
+  tags = []
+
+[[extensions]]
+  name = "golang.go"
+  tags = []
+
+[[extensions]]
+  name = "Gruntfuggly.todo-tree"
+  tags = []
+
+[[extensions]]
+  name = "inu1255.easy-snippet"
+  tags = []
+
+[[extensions]]
+  name = "ionutvmi.path-autocomplete"
+  tags = []
+
+[[extensions]]
+  name = "jasonnutter.search-node-modules"
+  tags = []
+
+[[extensions]]
+  name = "johnpapa.vscode-peacock"
+  tags = []
+
+[[extensions]]
+  name = "krvajalm.linter-gfortran"
+  tags = []
+
+[[extensions]]
+  name = "leizongmin.node-module-intellisense"
+  tags = []
+
+[[extensions]]
+  name = "mads-hartmann.bash-ide-vscode"
+  tags = []
+
+[[extensions]]
+  name = "mgmcdermott.vscode-language-babel"
+  tags = []
+
+[[extensions]]
+  name = "mikestead.dotenv"
+  tags = []
+
+[[extensions]]
+  name = "mitaki28.vscode-clang"
+  tags = []
+
+[[extensions]]
+  name = "ms-azuretools.vscode-docker"
+  tags = []
+
+[[extensions]]
+  name = "ms-vscode.cpptools"
+  tags = []
+
+[[extensions]]
+  name = "ms-vscode.vscode-typescript-next"
+  tags = []
+
+[[extensions]]
+  name = "ms-vsliveshare.vsliveshare"
+  tags = []
+
+[[extensions]]
+  name = "ms-vsliveshare.vsliveshare-audio"
+  tags = []
+
+[[extensions]]
+  name = "PKief.markdown-checkbox"
+  tags = []
+
+[[extensions]]
+  name = "PKief.material-icon-theme"
+  tags = []
+
+[[extensions]]
+  name = "pmneo.tsimporter"
+  tags = []
+
+[[extensions]]
+  name = "Prisma.vscode-graphql"
+  tags = []
+
+[[extensions]]
+  name = "redhat.vscode-yaml"
+  tags = []
+
+[[extensions]]
+  name = "rogalmic.bash-debug"
+  tags = []
+
+[[extensions]]
+  name = "sdras.night-owl"
+  tags = []
+
+[[extensions]]
+  name = "shd101wyy.markdown-preview-enhanced"
+  tags = []
+
+[[extensions]]
+  name = "silvenon.mdx"
+  tags = []
+
+[[extensions]]
+  name = "stackbreak.comment-divider"
+  tags = []
+
+[[extensions]]
+  name = "streetsidesoftware.code-spell-checker"
+  tags = []
+
+[[extensions]]
+  name = "stringham.move-ts"
+  tags = []
+
+[[extensions]]
+  name = "timonwong.shellcheck"
+  tags = []
+
+[[extensions]]
+  name = "traBpUkciP.vscode-npm-scripts"
+  tags = []
+
+[[extensions]]
+  name = "VisualStudioExptTeam.vscodeintellicode"
+  tags = []
+
+[[extensions]]
+  name = "waderyan.gitblame"
+  tags = []
+
+[[extensions]]
+  name = "WallabyJs.quokka-vscode"
+  tags = []
+
+[[extensions]]
+  name = "wayou.vscode-todo-highlight"
+  tags = []
+
+[[extensions]]
+  name = "webfreak.code-d"
+  tags = []
+
+[[extensions]]
+  name = "xyz.local-history"
+  tags = []
+
+[[extensions]]
+  name = "yokoe.vscode-postfix-go"
+  tags = []
+
+[[extensions]]
+  name = "yzhang.markdown-all-in-one"
+  tags = []
+
+[[extensions]]
+  name = ""
+  tags = []

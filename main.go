@@ -7,6 +7,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 
 	"github.com/pelletier/go-toml"
 )
@@ -28,14 +29,14 @@ func contains(arr []string, query string) bool {
 
 // Extension gives information about a particular vscode extension
 type Extension struct {
-	Name string   `json:"name"`
-	Tags []string `json:"stags"`
+	Name string   `toml:"name"`
+	Tags []string `toml:"tags"`
 }
 
 // Config gives information about the whole configuration file
 type Config struct {
-	Version    string      `json:"version"`
-	Extensions []Extension `json:"extension"`
+	Version    string      `toml:"version"`
+	Extensions []Extension `toml:"extensions"`
 }
 
 func main() {
@@ -48,8 +49,13 @@ Description:
     Contextual management of vscode extensions
 
 Commands:
+	 init
+    initiates an 'extensions.toml' folder that contains all extensions for tagging
     generate
     Generates all extension folders to be used by vscode
+
+	 Clear
+	 Clears all workspaces
 
     launch [workspace]
     launches a particular workspace in vscode`)
@@ -94,6 +100,7 @@ Commands:
 		extensionsDir := filepath.Join("workspaces", workspaceName)
 
 		cmd := exec.Command("code", "--extensions-dir", extensionsDir, ".")
+		cmd.Stderr = os.Stderr
 		stdout, err := cmd.Output()
 		if err != nil {
 			panic(err)
@@ -103,6 +110,45 @@ Commands:
 		if err := os.RemoveAll("workspaces"); err != nil {
 			panic(err)
 		}
+	} else if command == "init" {
+		var config Config
+		config.Version = "1"
+
+		cmd := exec.Command("code", "--list-extensions")
+		cmd.Stderr = os.Stderr
+		stdout, err := cmd.Output()
+		if err != nil {
+			panic(err)
+		}
+		extensions := strings.Split(string(stdout), "\n")
+		for _, extension := range extensions {
+			config.Extensions = append(config.Extensions, Extension{
+				Name: extension,
+			})
+		}
+
+		configRaw, err := toml.Marshal(config)
+		if err != nil {
+			panic(err)
+		}
+
+		file, err := os.OpenFile("extensions.toml", os.O_CREATE|os.O_EXCL|os.O_RDWR, 0644)
+		if err != nil {
+			if os.IsExist(err) {
+				fmt.Println("extensions.toml already exists. Remove it before continuing. Exiting")
+				os.Exit(1)
+				return
+			}
+			panic(err)
+		}
+
+		if _, err = file.Write(configRaw); err != nil {
+			panic(err)
+		}
+		if err := file.Close(); err != nil {
+			panic(err)
+		}
+
 	} else {
 		log.Fatalln("Unknown Command. Exiting")
 	}
