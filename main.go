@@ -99,6 +99,10 @@ Commands:
 			panic(err)
 		}
 		fmt.Println(stdout)
+	} else if command == "clear" {
+		if err := os.RemoveAll("workspaces"); err != nil {
+			panic(err)
+		}
 	} else {
 		log.Fatalln("Unknown Command. Exiting")
 	}
