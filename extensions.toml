@@ -1,48 +1,48 @@
 version = "1"
 
-[[groups]]
+[[workspaces]]
 name = "JavaScript"
 use = [
   "core", "theme", "productivity", "markdown", "html", "css", "javascript"
 ]
 
-[[groups]]
+[[workspaces]]
 name = "Go"
 use = [
   "core", "theme", "productivity", "go"
 ]
 
-[[groups]]
+[[workspaces]]
 name = "Infrastructure"
 use = [
   "core", "theme", "productivity", "go", "infrastructure"
 ]
 
-[[groups]]
+[[workspaces]]
 name = "Fortran"
 use = [
 	"core", "themes", "fortran"
 ]
 
-[[groups]]
-name = "C/C++"
+[[workspaces]]
+name = "C"
 use = [
 	"core", "themes", "cpp"
 ]
 
-[[groups]]
+[[workspaces]]
 name = "Ruby"
 use = [
 	"core", "themes", "ruby"
 ]
 
-[[groups]]
+[[workspaces]]
 name = "Ada"
 use = [
 	"core", "themes", "ada"
 ]
 
-[[groups]]
+[[workspaces]]
 name = "Dots"
 use = [
 	"core", "themes", "fish", "git", "bash"

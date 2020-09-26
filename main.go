@@ -12,23 +12,23 @@ import (
 	"github.com/pelletier/go-toml"
 )
 
-// Group is a group of extensions
-type Group struct {
-	Name string   `toml:"name"`
-	Use  []string `toml:"use"`
-}
-
-// Extension gives information about a particular vscode extension
+// Extension
 type Extension struct {
 	Name string   `toml:"name"`
 	Tags []string `toml:"tags"`
+}
+
+// Workspace
+type Workspace struct {
+	Name string   `toml:"name"`
+	Use  []string `toml:"use"`
 }
 
 // Config gives information about the whole configuration file
 type Config struct {
 	Version    string      `toml:"version"`
 	Extensions []Extension `toml:"extensions"`
-	Groups     []Group     `toml:"groups"`
+	Workspaces []Workspace `toml:"workspaces"`
 }
 
 func readConfig() Config {
@@ -56,6 +56,7 @@ func getVscodeExtensions() []string {
 	if err != nil {
 		panic(err)
 	}
+
 	return strings.Split(string(stdout), "\n")
 }
 func ensureLength(arr []string, minLength int, message string) {
@@ -106,32 +107,57 @@ Commands:
 	if command == "generate" {
 		config := readConfig()
 
-		if err := os.MkdirAll("workspaces", 0755); err != nil && !os.IsExist(err) {
-			panic(err)
-		}
-		if err := os.MkdirAll("aggregations", 0755); err != nil && !os.IsExist(err) {
-			panic(err)
+		for _, folder := range []string{"workspaces"} {
+			if err := os.MkdirAll(folder, 0755); err != nil && !os.IsExist(err) {
+				panic(err)
+			}
 		}
 
 		// generate workspaces
-		for _, extension := range config.Extensions {
-			fmt.Printf("EXTENSION: %s\n", extension.Name)
+		for _, workspace := range config.Workspaces {
+			fmt.Printf("WORKSPACE: %s\n", workspace.Name)
 
-			for _, tag := range extension.Tags {
-				fmt.Printf("tag: %s\n", tag)
+			for _, extension := range config.Extensions {
+				fmt.Printf("EXTENSION: %s\n", extension.Name)
 
-				// install extension
-				extensionsDir := filepath.Join("workspaces", tag)
+				for _, tag := range extension.Tags {
+					// if any tag in current extension is used in the workspace
+					if contains(workspace.Use, tag) {
+						extensionsDir := filepath.Join("workspaces", workspace.Name)
 
-				cmd := exec.Command("code", "--extensions-dir", extensionsDir, "--install-extension", extension.Name, "--force")
-				cmd.Stderr = os.Stderr
-				stdout, err := cmd.Output()
-				if err != nil {
-					panic(err)
+						cmd := exec.Command("code", "--extensions-dir", extensionsDir, "--install-extension", extension.Name, "--force")
+						cmd.Stderr = os.Stderr
+						stdout, err := cmd.Output()
+						if err != nil {
+							panic(err)
+						}
+						fmt.Println(string(stdout))
+
+						// go to next extension
+						continue
+					}
 				}
-				fmt.Println(string(stdout))
 			}
+
 		}
+		// for _, extension := range config.Extensions {
+		// 	fmt.Printf("EXTENSION: %s\n", extension.Name)
+
+		// 	for _, tag := range extension.Tags {
+		// 		fmt.Printf("tag: %s\n", tag)
+
+		// 		// install extension
+		// 		extensionsDir := filepath.Join("workspaces", tag)
+
+		// 		cmd := exec.Command("code", "--extensions-dir", extensionsDir, "--install-extension", extension.Name, "--force")
+		// 		cmd.Stderr = os.Stderr
+		// 		stdout, err := cmd.Output()
+		// 		if err != nil {
+		// 			panic(err)
+		// 		}
+		// 		fmt.Println(string(stdout))
+		// 	}
+		// }
 
 		// generate every combination of tags
 
@@ -241,7 +267,7 @@ Commands:
 			for _, tag := range extension.Tags {
 				inGroup := false
 			g:
-				for _, group := range config.Groups {
+				for _, group := range config.Workspaces {
 					for _, usedTag := range group.Use {
 						if usedTag == tag {
 							inGroup = true

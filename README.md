@@ -15,19 +15,21 @@ Contextual vscode extension management
 Launch Command:
 
 ```sh
-sparta launch --tag core --tag javascript
+sparta launch --preset JavaScript
 # is an abstraction over
-code --extensions-dir extensions/core-javascript
+code --extensions-dir presets/JavaScript
 ```
 
 Configuration File:
 
 ```toml
+version = "1"
+
 [[groups]]
 name = "JavaScript"
 description = "JavaScript / TypeScript Development Environment"
 use = [
-	"core", "javascript"
+        "core", "javascript"
 ]
 
 [[extensions]]
