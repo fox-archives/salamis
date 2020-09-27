@@ -56,8 +56,12 @@ func doCheck(opts Options) {
 	extensions := getVscodeExtensions()
 	config := readConfig()
 
-	fmt.Println("Extensions that are installed globally, but could not be found local")
+	fmt.Println("Extensions that are installed globally, but could not be found local. Add them to your extensions.toml if you want to use them")
 	for _, globalExtension := range extensions {
+		if globalExtension == "" {
+			continue
+		}
+
 		isHere := false
 		for _, spartaExtension := range config.Extensions {
 			if globalExtension == spartaExtension.Name {
@@ -72,7 +76,7 @@ func doCheck(opts Options) {
 	}
 
 	fmt.Println()
-	fmt.Println("Extensions that are installed locally, but not globally")
+	fmt.Println("Extensions that are installed locally, but not globally. Remove these from your extensions.toml, or install the extension globally, and re-clone your extensions")
 	for _, spartaExtension := range config.Extensions {
 		isGlobal := false
 

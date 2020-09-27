@@ -9,6 +9,7 @@ import (
 	"strings"
 )
 
+// downloads currently installed extensions
 func doDownloadExtensions(opts Options) {
 	currentExtensions := getVscodeExtensions()
 	for _, extension := range currentExtensions {
@@ -18,7 +19,7 @@ func doDownloadExtensions(opts Options) {
 
 		fmt.Printf("EXTENSION: %s\n", extension)
 
-		// install extensions
+		// install extensions, automatically creates opts.ExtensionsDir if it doesn't already exist
 		cmd := exec.Command("code", "--extensions-dir", opts.ExtensionsDir, "--install-extension", extension, "--force")
 		cmd.Stderr = os.Stderr
 		stdout, err := cmd.Output()
@@ -38,7 +39,8 @@ func doDownloadExtensions(opts Options) {
 			continue
 		}
 
-		// take off the version number
+		// take off the version number and make it lowercase
+		// vscode lowercases the extension name, but not the author, so this normalizes it, giving a stable link target
 		parts := strings.Split(dir.Name(), "-")
 		newName := strings.Join(parts[:len(parts)-1], "-")
 		newName = strings.ToLower(newName)
@@ -54,7 +56,10 @@ func doDownloadExtensions(opts Options) {
 }
 
 func doRemoveExtensions(opts Options) {
-	err := os.RemoveAll(opts.WorkspaceDir)
+	err := os.RemoveAll(opts.ExtensionsDir)
+	p(err)
+
+	err = os.MkdirAll(opts.ExtensionsDir, 0755)
 	p(err)
 }
 
@@ -97,4 +102,10 @@ func doSymlinkExtensions(opts Options) {
 	}
 }
 
-func doSymlinkRemove(opts Options) {}
+func doSymlinkRemove(opts Options) {
+	err := os.RemoveAll(opts.WorkspaceDir)
+	p(err)
+
+	err = os.MkdirAll(opts.WorkspaceDir, 0755)
+	p(err)
+}

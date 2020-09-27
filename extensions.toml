@@ -277,12 +277,6 @@ use = [
   ]
 
 [[extensions]]
-  name = "Prisma.vscode-graphql"
-  tags = [
-	  "javascript"
-  ]
-
-[[extensions]]
   name = "rebornix.ruby"
   tags = [
 	  "ruby"

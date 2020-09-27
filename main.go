@@ -5,6 +5,7 @@ import (
 	"os"
 )
 
+// Options User-customizable
 type Options struct {
 	ConfigFile    string
 	ExtensionsDir string
@@ -48,7 +49,7 @@ func main() {
 		break
 
 	case "plumbing":
-		ensureLength(args, 3, "Must pass in a 'plumbing' subcommand")
+		ensureLength(args, 2, "Must pass in a 'plumbing' subcommand")
 		command = args[1]
 
 		switch command {
