@@ -12,92 +12,11 @@ import (
 	"github.com/pelletier/go-toml"
 )
 
-// Extension
-type Extension struct {
-	Name string   `toml:"name"`
-	Tags []string `toml:"tags"`
-}
-
-// Workspace
-type Workspace struct {
-	Name string   `toml:"name"`
-	Use  []string `toml:"use"`
-}
-
-// Config gives information about the whole configuration file
-type Config struct {
-	Version    string      `toml:"version"`
-	Extensions []Extension `toml:"extensions"`
-	Workspaces []Workspace `toml:"workspaces"`
-}
-
-func p(err error) {
-	if err != nil {
-		panic(err)
-	}
-}
-
-// tests if an extension has a version
-func extensionHasVersion(str string) bool {
-	str = str[len(str)-1:]
-
-	if strings.Contains("1234567890", str) {
-		return true
-	}
-
-	return false
-}
-
-func isFolderEmpty(path string) bool {
-	dirs, err := ioutil.ReadDir(path)
-	p(err)
-
-	if len(dirs) == 0 {
-		return true
-	}
-
-	return false
-}
-
-func readConfig() Config {
-	var config Config
-
-	configRaw, err := ioutil.ReadFile(filepath.Join("extensions.toml"))
-	p(err)
-
-	err = toml.Unmarshal(configRaw, &config)
-	p(err)
-
-	return config
-}
-
-// returns array of extensions
-// example: ["yzhang.markdown-all-in-one@3.3.0"]
-func getVscodeExtensions() []string {
-	cmd := exec.Command("code", "--list-extensions")
-
-	cmd.Stderr = os.Stderr
-	stdout, err := cmd.Output()
-	p(err)
-
-	return strings.Split(string(stdout), "\n")
-}
-func ensureLength(arr []string, minLength int, message string) {
-	if len(arr) < minLength {
-		log.Fatalln(message)
-	}
-}
-
-func contains(arr []string, query string) bool {
-	for _, el := range arr {
-		if el == query {
-			return true
-		}
-	}
-	return false
-}
-
 func main() {
+	configFile := "extensions.toml"
+	extensionsDir := "extensions"
+	workspaceDir := "workspaces"
+
 	args := os.Args[1:]
 
 	if contains(args, "--help") || contains(args, "-h") {
@@ -131,7 +50,6 @@ Commands:
 
 	command := args[0]
 	if command == "clone" {
-		extensionsDir := "extensions"
 
 		currentExtensions := getVscodeExtensions()
 		for _, extension := range currentExtensions {
@@ -178,9 +96,6 @@ Commands:
 	} else if command == "generate" {
 		config := readConfig()
 
-		workspaceDir := "workspaces"
-		extensionsDir := "extensions"
-
 		err := os.RemoveAll(workspaceDir)
 		p(err)
 
@@ -218,15 +133,16 @@ Commands:
 	} else if command == "launch" {
 		ensureLength(args, 2, "Must pass in a workspace name")
 		workspaceName := args[1]
-		extensionsDir := filepath.Join("workspaces", workspaceName)
+		extensionsDir := filepath.Join(workspaceDir, workspaceName)
 
 		cmd := exec.Command("code", "--extensions-dir", extensionsDir, ".")
 		cmd.Stderr = os.Stderr
 		stdout, err := cmd.Output()
 		p(err)
+
 		fmt.Println(stdout)
 	} else if command == "clear" {
-		err := os.RemoveAll("workspaces")
+		err := os.RemoveAll(workspaceDir)
 		p(err)
 	} else if command == "init" {
 		// create config
@@ -248,7 +164,7 @@ Commands:
 		p(err)
 
 		// write config file only if it doesn't already exist
-		file, err := os.OpenFile("extensions.toml", os.O_CREATE|os.O_EXCL|os.O_RDWR, 0644)
+		file, err := os.OpenFile(configFile, os.O_CREATE|os.O_EXCL|os.O_RDWR, 0644)
 		defer func() {
 			file.Close()
 			p(err)
@@ -256,7 +172,7 @@ Commands:
 
 		if err != nil {
 			if os.IsExist(err) {
-				fmt.Printf("%s already exists. Remove it before continuing. Exiting\n", "extensions.toml")
+				fmt.Printf("%s already exists. Remove it before continuing. Exiting\n", configFile)
 				os.Exit(1)
 				return
 			}
