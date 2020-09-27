@@ -37,6 +37,28 @@ func p(err error) {
 	}
 }
 
+// tests if an extension has a version
+func extensionHasVersion(str string) bool {
+	str = str[len(str)-1:]
+
+	if strings.Contains("1234567890", str) {
+		return true
+	}
+
+	return false
+}
+
+func isFolderEmpty(path string) bool {
+	dirs, err := ioutil.ReadDir(path)
+	p(err)
+
+	if len(dirs) == 0 {
+		return true
+	}
+
+	return false
+}
+
 func readConfig() Config {
 	var config Config
 
@@ -119,7 +141,7 @@ Commands:
 
 			fmt.Printf("EXTENSION: %s\n", extension)
 
-			// // install extensions
+			// install extensions
 			cmd := exec.Command("code", "--extensions-dir", extensionsDir, "--install-extension", extension, "--force")
 			cmd.Stderr = os.Stderr
 			stdout, err := cmd.Output()
@@ -127,12 +149,51 @@ Commands:
 
 			fmt.Println(string(stdout))
 		}
+
+		// now, we have to rename all the files to remove the version number
+		dirs, err := ioutil.ReadDir(extensionsDir)
+		p(err)
+
+		for _, dir := range dirs {
+			// if extension doesn't have version, it has already
+			// been renamed
+			if !extensionHasVersion(dir.Name()) {
+				continue
+			}
+
+			// take off the version number
+			parts := strings.Split(dir.Name(), "-")
+			newName := strings.Join(parts[:len(parts)-1], "-")
+			newName = strings.ToLower(newName)
+
+			old := filepath.Join(extensionsDir, dir.Name())
+			new := filepath.Join(extensionsDir, newName)
+
+			err := os.Rename(old, new)
+			p(err)
+
+			fmt.Printf("Renaming file: '%s'\n", new)
+		}
+
 	} else if command == "generate" {
 		config := readConfig()
+
+		workspaceDir := "workspaces"
+		extensionsDir := "extensions"
+
+		err := os.RemoveAll(workspaceDir)
+		p(err)
+
+		err = os.MkdirAll(workspaceDir, 0755)
+		p(err)
 
 		// generate workspaces
 		for _, workspace := range config.Workspaces {
 			fmt.Printf("WORKSPACE: %s\n", workspace.Name)
+			err := os.MkdirAll(filepath.Join(workspaceDir, workspace.Name), 0755)
+			if err != nil && !os.IsExist(err) {
+				panic(err)
+			}
 
 			for _, extension := range config.Extensions {
 				fmt.Printf("EXTENSION: %s\n", extension.Name)
@@ -140,17 +201,15 @@ Commands:
 				for _, tag := range extension.Tags {
 					// if any tag in current extension is used in the workspace
 					if contains(workspace.Use, tag) {
-						extensionsDir := filepath.Join("workspaces", workspace.Name)
+						src := filepath.Join("../..", extensionsDir, strings.ToLower(extension.Name))
+						dest := filepath.Join(workspaceDir, workspace.Name, extension.Name)
 
-						cmd := exec.Command("code", "--extensions-dir", extensionsDir, "--install-extension", extension.Name, "--force")
-						cmd.Stderr = os.Stderr
-						stdout, err := cmd.Output()
-						if err != nil {
+						err := os.Symlink(src, dest)
+						if err != nil && !os.IsExist(err) {
 							panic(err)
 						}
-						fmt.Println(string(stdout))
 
-						// go to next extension
+						// go to next extension of a workspace
 						continue
 					}
 				}
@@ -170,13 +229,6 @@ Commands:
 		err := os.RemoveAll("workspaces")
 		p(err)
 	} else if command == "init" {
-		// create main folders
-		for _, folder := range []string{"workspaces", "extensions"} {
-			if err := os.MkdirAll(folder, 0755); err != nil && !os.IsExist(err) {
-				panic(err)
-			}
-		}
-
 		// create config
 		var config Config
 		config.Version = "1"
@@ -204,7 +256,7 @@ Commands:
 
 		if err != nil {
 			if os.IsExist(err) {
-				fmt.Printf("%s already exists. Remove it before continuing. Exiting", "extensions.toml")
+				fmt.Printf("%s already exists. Remove it before continuing. Exiting\n", "extensions.toml")
 				os.Exit(1)
 				return
 			}
