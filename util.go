@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
@@ -95,4 +96,36 @@ func contains(arr []string, query string) bool {
 		}
 	}
 	return false
+}
+
+func printHelp() {
+	fmt.Println(`sparta
+
+Description:
+  Contextual vscode extension management
+
+Commands:
+  init
+    Initiates an 'extensions.toml' folder that contains all extensions for tagging
+
+  update
+    Updates the extensions and resymlinks them
+
+  check
+    Prints all extensions mismatches between default globally installed and ones defined in extensions.toml
+
+  launch [workspace]
+	 Launches a particular workspace in vscode
+
+  plumbing download-extensions
+	 Redownloads your current extensions into a directory
+
+  plumbing remove-extensions
+    Removes all current extensions
+
+  plumbing symlink-extensions
+	 For each extension in a workspace, symlink it to the extensions downloaded
+
+  plumbing remove-symlinks
+    Remove all symlinks`)
 }
