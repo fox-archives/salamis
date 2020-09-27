@@ -74,6 +74,12 @@ func contains(arr []string, query string) bool {
 	return false
 }
 
+func p(err error) {
+	if err != nil {
+		panic(err)
+	}
+}
+
 func main() {
 	args := os.Args[1:]
 
@@ -84,6 +90,9 @@ Description:
   Contextual vscode extension management
 
 Commands:
+  clone
+	 Clones your current extensions to a local folder
+
   init
     Initiates an 'extensions.toml' folder that contains all extensions for tagging
 
@@ -104,7 +113,33 @@ Commands:
 	ensureLength(args, 1, "Must specify command. Exiting")
 
 	command := args[0]
-	if command == "generate" {
+	if command == "clone" {
+		extensionsDir := "clone-extensions"
+
+		cmd := exec.Command("code", "--list-extensions", "--show-versions")
+		cmd.Stderr = os.Stderr
+		currentExtensionsString, err := cmd.Output()
+		p(err)
+
+		currentExtensions := strings.Split(string(currentExtensionsString), "\n")
+
+		// extension ex: "yzhang.markdown-all-in-one@3.3.0"
+		for _, extension := range currentExtensions {
+			if extension == "" {
+				continue
+			}
+
+			fmt.Printf("EXTENSION: %s\n", extension)
+
+			// // install extensions
+			cmd := exec.Command("code", "--extensions-dir", extensionsDir, "--install-extension", extension, "--force")
+			cmd.Stderr = os.Stderr
+			stdout, err := cmd.Output()
+			p(err)
+
+			fmt.Println(string(stdout))
+		}
+	} else if command == "generate" {
 		config := readConfig()
 
 		for _, folder := range []string{"workspaces"} {
@@ -140,24 +175,6 @@ Commands:
 			}
 
 		}
-		// for _, extension := range config.Extensions {
-		// 	fmt.Printf("EXTENSION: %s\n", extension.Name)
-
-		// 	for _, tag := range extension.Tags {
-		// 		fmt.Printf("tag: %s\n", tag)
-
-		// 		// install extension
-		// 		extensionsDir := filepath.Join("workspaces", tag)
-
-		// 		cmd := exec.Command("code", "--extensions-dir", extensionsDir, "--install-extension", extension.Name, "--force")
-		// 		cmd.Stderr = os.Stderr
-		// 		stdout, err := cmd.Output()
-		// 		if err != nil {
-		// 			panic(err)
-		// 		}
-		// 		fmt.Println(string(stdout))
-		// 	}
-		// }
 
 		// generate every combination of tags
 
