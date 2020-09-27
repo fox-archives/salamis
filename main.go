@@ -31,31 +31,32 @@ type Config struct {
 	Workspaces []Workspace `toml:"workspaces"`
 }
 
+func p(err error) {
+	if err != nil {
+		panic(err)
+	}
+}
+
 func readConfig() Config {
 	var config Config
 
 	configRaw, err := ioutil.ReadFile(filepath.Join("extensions.toml"))
-	if err != nil {
-		panic(err)
-	}
-	if err = toml.Unmarshal(configRaw, &config); err != nil {
-		panic(err)
-	}
+	p(err)
+
+	err = toml.Unmarshal(configRaw, &config)
+	p(err)
 
 	return config
 }
 
+// returns array of extensions
+// example: ["yzhang.markdown-all-in-one@3.3.0"]
 func getVscodeExtensions() []string {
 	cmd := exec.Command("code", "--list-extensions")
 
 	cmd.Stderr = os.Stderr
-	fmt.Println("h")
 	stdout, err := cmd.Output()
-	fmt.Println("thing")
-
-	if err != nil {
-		panic(err)
-	}
+	p(err)
 
 	return strings.Split(string(stdout), "\n")
 }
@@ -72,12 +73,6 @@ func contains(arr []string, query string) bool {
 		}
 	}
 	return false
-}
-
-func p(err error) {
-	if err != nil {
-		panic(err)
-	}
 }
 
 func main() {
@@ -114,16 +109,9 @@ Commands:
 
 	command := args[0]
 	if command == "clone" {
-		extensionsDir := "clone-extensions"
+		extensionsDir := "extensions"
 
-		cmd := exec.Command("code", "--list-extensions", "--show-versions")
-		cmd.Stderr = os.Stderr
-		currentExtensionsString, err := cmd.Output()
-		p(err)
-
-		currentExtensions := strings.Split(string(currentExtensionsString), "\n")
-
-		// extension ex: "yzhang.markdown-all-in-one@3.3.0"
+		currentExtensions := getVscodeExtensions()
 		for _, extension := range currentExtensions {
 			if extension == "" {
 				continue
@@ -141,12 +129,6 @@ Commands:
 		}
 	} else if command == "generate" {
 		config := readConfig()
-
-		for _, folder := range []string{"workspaces"} {
-			if err := os.MkdirAll(folder, 0755); err != nil && !os.IsExist(err) {
-				panic(err)
-			}
-		}
 
 		// generate workspaces
 		for _, workspace := range config.Workspaces {
@@ -173,11 +155,7 @@ Commands:
 					}
 				}
 			}
-
 		}
-
-		// generate every combination of tags
-
 	} else if command == "launch" {
 		ensureLength(args, 2, "Must pass in a workspace name")
 		workspaceName := args[1]
@@ -186,15 +164,20 @@ Commands:
 		cmd := exec.Command("code", "--extensions-dir", extensionsDir, ".")
 		cmd.Stderr = os.Stderr
 		stdout, err := cmd.Output()
-		if err != nil {
-			panic(err)
-		}
+		p(err)
 		fmt.Println(stdout)
 	} else if command == "clear" {
-		if err := os.RemoveAll("workspaces"); err != nil {
-			panic(err)
-		}
+		err := os.RemoveAll("workspaces")
+		p(err)
 	} else if command == "init" {
+		// create main folders
+		for _, folder := range []string{"workspaces", "extensions"} {
+			if err := os.MkdirAll(folder, 0755); err != nil && !os.IsExist(err) {
+				panic(err)
+			}
+		}
+
+		// create config
 		var config Config
 		config.Version = "1"
 
@@ -210,27 +193,26 @@ Commands:
 		}
 
 		configRaw, err := toml.Marshal(config)
-		if err != nil {
-			panic(err)
-		}
+		p(err)
 
+		// write config file only if it doesn't already exist
 		file, err := os.OpenFile("extensions.toml", os.O_CREATE|os.O_EXCL|os.O_RDWR, 0644)
+		defer func() {
+			file.Close()
+			p(err)
+		}()
+
 		if err != nil {
 			if os.IsExist(err) {
-				fmt.Println("extensions.toml already exists. Remove it before continuing. Exiting")
+				fmt.Printf("%s already exists. Remove it before continuing. Exiting", "extensions.toml")
 				os.Exit(1)
 				return
 			}
 			panic(err)
 		}
 
-		if _, err = file.Write(configRaw); err != nil {
-			panic(err)
-		}
-		if err := file.Close(); err != nil {
-			panic(err)
-		}
-
+		_, err = file.Write(configRaw)
+		p(err)
 	} else if command == "check" {
 
 		extensions := getVscodeExtensions()
