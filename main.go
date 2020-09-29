@@ -35,7 +35,8 @@ func main() {
 		break
 
 	case "update":
-		doUpdate(opts)
+		doRemoveExtensions(opts)
+		doDownloadExtensions(opts)
 		break
 
 	case "check":

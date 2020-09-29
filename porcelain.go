@@ -31,7 +31,7 @@ func doInit(opts Options) {
 	// write config file only if it doesn't already exist
 	file, err := os.OpenFile(opts.ConfigFile, os.O_CREATE|os.O_EXCL|os.O_RDWR, 0644)
 	defer func() {
-		file.Close()
+		err := file.Close()
 		p(err)
 	}()
 
@@ -48,15 +48,13 @@ func doInit(opts Options) {
 	p(err)
 }
 
-func doUpdate(opts Options) {
-
-}
+func doUpdate(opts Options) {}
 
 func doCheck(opts Options) {
 	extensions := getVscodeExtensions()
 	config := readConfig()
 
-	fmt.Println("Extensions that are installed globally, but could not be found local. Add them to your extensions.toml if you want to use them")
+	fmt.Println(`Extensions saved in Sparta, but not used in the config`)
 	for _, globalExtension := range extensions {
 		if globalExtension == "" {
 			continue
@@ -71,12 +69,12 @@ func doCheck(opts Options) {
 		}
 
 		if !isHere {
-			fmt.Printf("NOT LOCAL: %s\n", globalExtension)
+			fmt.Printf("- %s\n", globalExtension)
 		}
 	}
 
 	fmt.Println()
-	fmt.Println("Extensions that are installed locally, but not globally. Remove these from your extensions.toml, or install the extension globally, and re-clone your extensions")
+	fmt.Println("Extensions that are used in the config, but not saved in Sparta")
 	for _, spartaExtension := range config.Extensions {
 		isGlobal := false
 
@@ -90,20 +88,20 @@ func doCheck(opts Options) {
 		}
 
 		if !isGlobal {
-			fmt.Printf("NOT GLOBAL: %s\n", spartaExtension.Name)
+			fmt.Printf("- %s\n", spartaExtension.Name)
 		}
 	}
 
 	fmt.Println()
-	fmt.Println("Extensions that don't have any tags")
+	fmt.Println("Extensions with missing tags")
 	for _, extension := range config.Extensions {
 		if len(extension.Tags) == 0 {
-			fmt.Printf("NO TAGS: %s\n", extension.Name)
+			fmt.Printf("- %s\n", extension.Name)
 		}
 	}
 
 	fmt.Println()
-	fmt.Println("Extensions tags that aren't in a group")
+	fmt.Println("Tags assigned to extensions that aren't referenced by any workspace")
 	for _, extension := range config.Extensions {
 		for _, tag := range extension.Tags {
 			inGroup := false
@@ -118,7 +116,7 @@ func doCheck(opts Options) {
 
 			}
 			if !inGroup {
-				fmt.Printf("TAG NOT USED: %s\n", tag)
+				fmt.Printf("- %s\n", tag)
 			}
 		}
 	}
@@ -127,6 +125,19 @@ func doCheck(opts Options) {
 
 func doLaunch(opts Options, workspaceName string) {
 	extensionsDir := filepath.Join(opts.WorkspaceDir, workspaceName)
+
+	_, err := os.Stat(extensionsDir)
+	if err != nil {
+		if os.IsPermission(err) {
+			fmt.Printf("Could not access extension folder '%s'\n", extensionsDir)
+			os.Exit(1)
+		} else if os.IsNotExist(err) {
+			fmt.Printf("Folder '%s' does not exist\n", extensionsDir)
+			os.Exit(1)
+		}
+		panic(err)
+
+	}
 
 	cmd := exec.Command("code", "--extensions-dir", extensionsDir, ".")
 	cmd.Stderr = os.Stderr
