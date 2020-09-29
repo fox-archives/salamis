@@ -72,6 +72,11 @@ func doSymlinkExtensions(opts Options) {
 	err = os.MkdirAll(opts.WorkspaceDir, 0755)
 	p(err)
 
+	if len(config.Workspaces) == 0 {
+		fmt.Println("You have no workspaces specified")
+		os.Exit(1)
+	}
+
 	// generate workspaces
 	for _, workspace := range config.Workspaces {
 		fmt.Printf("WORKSPACE: %s\n", workspace.Name)

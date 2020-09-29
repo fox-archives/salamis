@@ -28,6 +28,12 @@ func doInit(opts Options) {
 	configRaw, err := toml.Marshal(config)
 	p(err)
 
+	// ensure path to config file exists
+	err = os.MkdirAll(filepath.Dir(opts.ConfigFile), 0755)
+	if err != nil && !os.IsExist(err) {
+		panic(err)
+	}
+
 	// write config file only if it doesn't already exist
 	file, err := os.OpenFile(opts.ConfigFile, os.O_CREATE|os.O_EXCL|os.O_RDWR, 0644)
 	defer func() {
