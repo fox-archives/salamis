@@ -64,7 +64,7 @@ func doRemoveExtensions(opts Options) {
 }
 
 func doSymlinkExtensions(opts Options) {
-	config := readConfig()
+	config := readConfig(opts)
 
 	err := os.RemoveAll(opts.WorkspaceDir)
 	p(err)

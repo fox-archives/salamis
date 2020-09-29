@@ -59,10 +59,10 @@ func isFolderEmpty(path string) bool {
 	return false
 }
 
-func readConfig() Config {
+func readConfig(opts Options) Config {
 	var config Config
 
-	configRaw, err := ioutil.ReadFile(filepath.Join("extensions.toml"))
+	configRaw, err := ioutil.ReadFile(filepath.Join(opts.ConfigFile))
 	p(err)
 
 	err = toml.Unmarshal(configRaw, &config)

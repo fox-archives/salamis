@@ -52,7 +52,7 @@ func doUpdate(opts Options) {}
 
 func doCheck(opts Options) {
 	extensions := getVscodeExtensions()
-	config := readConfig()
+	config := readConfig(opts)
 
 	fmt.Println(`Extensions saved in Sparta, but not used in the config`)
 	for _, globalExtension := range extensions {
