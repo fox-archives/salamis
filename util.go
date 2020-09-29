@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"io/ioutil"
-	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -63,6 +62,10 @@ func readConfig(opts Options) Config {
 	var config Config
 
 	configRaw, err := ioutil.ReadFile(filepath.Join(opts.ConfigFile))
+	if os.IsNotExist(err) {
+		fmt.Println("Error: extensions.toml not found. Did you forget to init?")
+		os.Exit(1)
+	}
 	p(err)
 
 	err = toml.Unmarshal(configRaw, &config)
@@ -85,7 +88,8 @@ func getVscodeExtensions() []string {
 
 func ensureLength(arr []string, minLength int, message string) {
 	if len(arr) < minLength {
-		log.Fatalln(message)
+		fmt.Println(message)
+		os.Exit(1)
 	}
 }
 

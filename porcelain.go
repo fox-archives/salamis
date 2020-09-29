@@ -132,7 +132,7 @@ func doLaunch(opts Options, workspaceName string) {
 			fmt.Printf("Could not access extension folder '%s'\n", extensionsDir)
 			os.Exit(1)
 		} else if os.IsNotExist(err) {
-			fmt.Printf("Folder '%s' does not exist\n", extensionsDir)
+			fmt.Printf("Workspace '%s' is invalid because the folder '%s' does not exist. Did you specify '%s' it in your extensions.toml file?\n", workspaceName, extensionsDir, workspaceName)
 			os.Exit(1)
 		}
 		panic(err)

@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"os"
+	"path/filepath"
 )
 
 // Options User-customizable
@@ -13,10 +14,16 @@ type Options struct {
 }
 
 func main() {
+	configDir, err := os.UserConfigDir()
+	p(err)
+
+	cacheDir, err := os.UserCacheDir()
+	p(err)
+
 	opts := Options{
-		ConfigFile:    "extensions.toml",
-		ExtensionsDir: "extensions",
-		WorkspaceDir:  "workspaces",
+		ConfigFile:    filepath.Join(configDir, "sparta", "extensions.toml"),
+		ExtensionsDir: filepath.Join(cacheDir, "sparta", "extensions"),
+		WorkspaceDir:  filepath.Join(cacheDir, "sparta", "workspaces"),
 	}
 
 	args := os.Args[1:]
@@ -44,13 +51,13 @@ func main() {
 		break
 
 	case "launch":
-		ensureLength(args, 2, "Must pass in a workspace name")
+		ensureLength(args, 2, "Error: Must pass in a workspace name")
 		workspaceName := args[1]
 		doLaunch(opts, workspaceName)
 		break
 
 	case "plumbing":
-		ensureLength(args, 2, "Must pass in a 'plumbing' subcommand")
+		ensureLength(args, 2, "Error: Must pass in a 'plumbing' subcommand")
 		command = args[1]
 
 		switch command {
