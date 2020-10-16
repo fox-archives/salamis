@@ -124,17 +124,23 @@ Commands:
     Prints all extensions mismatches between default globally installed and ones defined in extensions.toml
 
   launch [workspace]
-	 Launches a particular workspace in vscode
+    Launches a particular workspace in vscode
 
   plumbing download-extensions
-	 Redownloads your current extensions into a directory
+    Redownloads your current extensions into a directory
 
   plumbing remove-extensions
     Removes all current extensions
 
   plumbing symlink-extensions
-	 For each extension in a workspace, symlink it to the extensions downloaded
+    For each extension in a workspace, symlink it to the extensions downloaded
 
   plumbing remove-symlinks
-    Remove all symlinks`)
+     Remove all symlinks
+
+  plumbing install-xdg-desktop-entries
+    Install all .desktop entries
+
+  plumbing remove-xdg-desktop-entries
+    Remove all .desktop entries`)
 }

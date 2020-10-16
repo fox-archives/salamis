@@ -85,6 +85,14 @@ func main() {
 			doSymlinkRemove(opts)
 			break
 
+		case "install-xdg-desktop-entries":
+			doInstallXdgDesktopEntries(opts)
+			break
+
+		case "remove-xdg-desktop-entries":
+			doRemoveXdgDesktopEntries(opts)
+			break
+
 		default:
 			log.Fatalln("Unknown subcommand. Exiting")
 			break
