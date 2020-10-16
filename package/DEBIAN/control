@@ -1,0 +1,12 @@
+Source: salamis
+Version: 0.2.0
+Maintainer: Edwin Kofler <>
+Section: misc
+Priority: optional
+Standards-Version: 3.9.2
+Build-Depends: debhelper (>= 9)
+Package: salamis
+Architecture: any
+Depends:
+Description: greet user
+ hithere greets the user, or the world.

@@ -1,4 +1,4 @@
-module github.com/vscode-extension-launcher
+module github.com/eankeen/salamis
 
 go 1.14
 

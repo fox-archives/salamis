@@ -21,9 +21,9 @@ func main() {
 	p(err)
 
 	opts := Options{
-		ConfigFile:    filepath.Join(configDir, "sparta", "extensions.toml"),
-		ExtensionsDir: filepath.Join(cacheDir, "sparta", "extensions"),
-		WorkspaceDir:  filepath.Join(cacheDir, "sparta", "workspaces"),
+		ConfigFile:    filepath.Join(configDir, "salamis", "extensions.toml"),
+		ExtensionsDir: filepath.Join(cacheDir, "salamis", "extensions"),
+		WorkspaceDir:  filepath.Join(cacheDir, "salamis", "workspaces"),
 	}
 
 	args := os.Args[1:]
@@ -44,6 +44,14 @@ func main() {
 	case "update":
 		doRemoveExtensions(opts)
 		doDownloadExtensions(opts)
+		break
+
+	case "list":
+		doList(opts)
+		break
+
+	case "edit":
+		doEdit(opts)
 		break
 
 	case "check":

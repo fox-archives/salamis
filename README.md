@@ -1,4 +1,4 @@
-# sparta
+# Salamis
 
 Contextual vscode extension management
 
@@ -15,9 +15,9 @@ Contextual vscode extension management
 Launch Command:
 
 ```sh
-sparta launch JavaScript
+salamis launch JavaScript
 # is an abstraction over
-code --extensions-dir ~/.cache/sparta/workspaces/JavaScript
+code --extensions-dir ~/.cache/salamis/workspaces/JavaScript
 ```
 
 Configuration File:

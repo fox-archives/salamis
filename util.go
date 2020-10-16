@@ -103,7 +103,7 @@ func contains(arr []string, query string) bool {
 }
 
 func printHelp() {
-	fmt.Println(`sparta
+	fmt.Println(`salamis
 
 Description:
   Contextual vscode extension management

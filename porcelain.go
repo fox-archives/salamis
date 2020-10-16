@@ -54,21 +54,48 @@ func doInit(opts Options) {
 	p(err)
 }
 
-func doUpdate(opts Options) {}
+func doList(opts Options) {
+	config := readConfig(opts)
+
+	for _, workspace := range config.Workspaces {
+		fmt.Printf("- %s\n  tags: %+v\n\n", workspace.Name, workspace.Use)
+	}
+}
+
+func doEdit(opts Options) {
+	editor := os.Getenv("EDITOR")
+	visual := os.Getenv("VISUAL")
+	program := "vim"
+
+	if visual != "" {
+		program = visual
+	}
+	if editor != "" {
+		program = editor
+	}
+
+	cmd := exec.Command(program, opts.ConfigFile)
+	cmd.Stdin = os.Stdin
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+
+	err := cmd.Run()
+	p(err)
+}
 
 func doCheck(opts Options) {
 	extensions := getVscodeExtensions()
 	config := readConfig(opts)
 
-	fmt.Println(`Extensions saved in Sparta, but not used in the config`)
+	fmt.Println(`Extensions saved in salamis, but not used in the config`)
 	for _, globalExtension := range extensions {
 		if globalExtension == "" {
 			continue
 		}
 
 		isHere := false
-		for _, spartaExtension := range config.Extensions {
-			if globalExtension == spartaExtension.Name {
+		for _, salamisExtension := range config.Extensions {
+			if globalExtension == salamisExtension.Name {
 				isHere = true
 				continue
 			}
@@ -80,13 +107,13 @@ func doCheck(opts Options) {
 	}
 
 	fmt.Println()
-	fmt.Println("Extensions that are used in the config, but not saved in Sparta")
-	for _, spartaExtension := range config.Extensions {
+	fmt.Println("Extensions that are used in the config, but not saved in salamis")
+	for _, salamisExtension := range config.Extensions {
 		isGlobal := false
 
 		for _, globalExtension := range extensions {
 
-			if spartaExtension.Name == globalExtension {
+			if salamisExtension.Name == globalExtension {
 
 				isGlobal = true
 				continue
@@ -94,7 +121,7 @@ func doCheck(opts Options) {
 		}
 
 		if !isGlobal {
-			fmt.Printf("- %s\n", spartaExtension.Name)
+			fmt.Printf("- %s\n", salamisExtension.Name)
 		}
 	}
 
