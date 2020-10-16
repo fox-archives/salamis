@@ -12,7 +12,7 @@ import (
 )
 
 // downloads currently installed extensions
-func doDownloadExtensions(opts Options) {
+func doExtensionsInstall(opts Options) {
 	currentExtensions := getVscodeExtensions()
 	for _, extension := range currentExtensions {
 		if extension == "" {
@@ -57,7 +57,7 @@ func doDownloadExtensions(opts Options) {
 	}
 }
 
-func doRemoveExtensions(opts Options) {
+func doExtensionsRemove(opts Options) {
 	err := os.RemoveAll(opts.ExtensionsDir)
 	handle(err)
 
@@ -65,7 +65,7 @@ func doRemoveExtensions(opts Options) {
 	handle(err)
 }
 
-func doSymlinkExtensions(opts Options) {
+func doExtensionsSymlink(opts Options) {
 	config := readConfig(opts)
 
 	err := os.RemoveAll(opts.WorkspaceDir)
@@ -109,7 +109,7 @@ func doSymlinkExtensions(opts Options) {
 	}
 }
 
-func doSymlinkRemove(opts Options) {
+func doExtensionsUnsymlink(opts Options) {
 	err := os.RemoveAll(opts.WorkspaceDir)
 	handle(err)
 
@@ -117,12 +117,12 @@ func doSymlinkRemove(opts Options) {
 	handle(err)
 }
 
-func doInstallXdgDesktopEntries(opts Options) {
+func doXdgInstall(opts Options) {
 	type DesktopEntry struct {
-		Name                 string
-		ExtensionCacheFolder string
-		Exec                 string
-		Icon                 string
+		Name          string
+		ExtensionsDir string
+		Exec          string
+		Icon          string
 	}
 
 	for _, workspace := range readConfig(opts).Workspaces {
@@ -156,7 +156,7 @@ Keywords=vscode;{{.Name}};`)
 	}
 }
 
-func doRemoveXdgDesktopEntries(opts Options) {
+func doXdgRemove(opts Options) {
 	matches, err := filepath.Glob(filepath.Join(opts.ApplicationsDir, "salamis.*"))
 	handle(err)
 

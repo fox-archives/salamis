@@ -51,8 +51,12 @@ func main() {
 		break
 
 	case "update":
-		doRemoveExtensions(opts)
-		doDownloadExtensions(opts)
+		doExtensionsRemove(opts)
+		doExtensionsInstall(opts)
+		doExtensionsUnsymlink(opts)
+		doExtensionsSymlink(opts)
+		doXdgRemove(opts)
+		doXdgInstall(opts)
 		break
 
 	case "list":
@@ -78,28 +82,28 @@ func main() {
 		command = args[1]
 
 		switch command {
-		case "download-extensions":
-			doDownloadExtensions(opts)
+		case "extensions-install":
+			doExtensionsInstall(opts)
 			break
 
-		case "remove-extensions":
-			doRemoveExtensions(opts)
+		case "extensions-remove":
+			doExtensionsRemove(opts)
 			break
 
-		case "symlink-extensions":
-			doSymlinkExtensions(opts)
+		case "extensions-symlink":
+			doExtensionsSymlink(opts)
 			break
 
-		case "remove-symlinks":
-			doSymlinkRemove(opts)
+		case "extensions-unsymlink":
+			doExtensionsUnsymlink(opts)
 			break
 
-		case "install-xdg-desktop-entries":
-			doInstallXdgDesktopEntries(opts)
+		case "xdg-install":
+			doXdgInstall(opts)
 			break
 
-		case "remove-xdg-desktop-entries":
-			doRemoveXdgDesktopEntries(opts)
+		case "xdg-remove":
+			doXdgRemove(opts)
 			break
 
 		default:

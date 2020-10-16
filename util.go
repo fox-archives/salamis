@@ -112,35 +112,35 @@ Commands:
     Initiates an 'extensions.toml' folder that contains all extensions for tagging
 
   update
-    Updates the extensions and resymlinks them
+    Removes, re-downloads, and unsymlinks, resymlinks all specified extensions. Then, it removes and reinstalls XDG Desktop Entries
 
   list
     List all workspaces and their specifying tags
 
   edit
-    Edit the 'workspaces.toml' file
+    Opens the 'workspaces.toml' file in your default editor
 
   check
-    Prints all extensions mismatches between default globally installed and ones defined in extensions.toml
+    Prints all workspace/extensions/tag relationships that may need notice / be of interest. See the documentation for more information about each type of check performed.
 
   launch [workspace]
-    Launches a particular workspace in vscode
+    Launches a the specified workspace in vscode
 
-  plumbing download-extensions
-    Redownloads your current extensions into a directory
+  plumbing extensions-install
+    Installs (downloads) all current extensions into the salamis cache folder
 
-  plumbing remove-extensions
-    Removes all current extensions
+  plumbing extensions-remove
+    Removes all extensions found in the salamis cache folder
 
-  plumbing symlink-extensions
-    For each extension in a workspace, symlink it to the extensions downloaded
+  plumbing extensions-symlink
+    For each tag of each workspace, symlink all extensions that match that tag to a subfolder of that workspace
 
-  plumbing remove-symlinks
-     Remove all symlinks
+  plumbing extensions-unsymlink
+     Remove all created symlinks for each workspace
 
-  plumbing install-xdg-desktop-entries
-    Install all .desktop entries
+  plumbing xdg-install
+    Install (write) all solamis.*.desktop entries
 
-  plumbing remove-xdg-desktop-entries
-    Remove all .desktop entries`)
+  plumbing xdg-remove
+    Remove all solamis.desktop entries`)
 }

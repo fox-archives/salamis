@@ -2,6 +2,8 @@
 
 Contextual vscode extension management
 
+- todo: make list also show all extensions that a workspace owns (via inspecting the tags)
+
 ## Problem
 
 - Many extensions are installed, but only a fraction are used per project. Domain/Language specific extensions are still loaded, even if they may not be applicable
@@ -23,8 +25,6 @@ code --extensions-dir ~/.cache/salamis/workspaces/JavaScript
 Configuration File:
 
 ```toml
-version = "1"
-
 [[workspaces]]
 name = "JavaScript"
 description = "JavaScript / TypeScript Development Environment"
