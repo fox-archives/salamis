@@ -25,7 +25,6 @@ type Workspace struct {
 
 // Config gives information about the whole configuration file
 type Config struct {
-	Version    string      `toml:"version"`
 	Extensions []Extension `toml:"extensions"`
 	Workspaces []Workspace `toml:"workspaces"`
 }
@@ -114,6 +113,12 @@ Commands:
 
   update
     Updates the extensions and resymlinks them
+
+  list
+    List all workspaces and their specifying tags
+
+  edit
+    Edit the 'workspaces.toml' file
 
   check
     Prints all extensions mismatches between default globally installed and ones defined in extensions.toml

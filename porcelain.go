@@ -12,7 +12,6 @@ import (
 func doInit(opts Options) {
 	// create config
 	var config Config
-	config.Version = "1"
 
 	extensions := getVscodeExtensions()
 	for _, extension := range extensions {
@@ -87,7 +86,7 @@ func doCheck(opts Options) {
 	extensions := getVscodeExtensions()
 	config := readConfig(opts)
 
-	fmt.Println(`Extensions saved in salamis, but not used in the config`)
+	fmt.Println(`Extensions saved in salamis cache, but not used in the extensions.toml config`)
 	for _, globalExtension := range extensions {
 		if globalExtension == "" {
 			continue
@@ -107,7 +106,7 @@ func doCheck(opts Options) {
 	}
 
 	fmt.Println()
-	fmt.Println("Extensions that are used in the config, but not saved in salamis")
+	fmt.Println("Extensions that are used in the extensions.toml config, but not saved in salamis cache")
 	for _, salamisExtension := range config.Extensions {
 		isGlobal := false
 
