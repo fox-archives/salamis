@@ -8,22 +8,31 @@ import (
 
 // Options User-customizable
 type Options struct {
-	ConfigFile    string
-	ExtensionsDir string
-	WorkspaceDir  string
+	ConfigFile      string
+	ExtensionsDir   string
+	WorkspaceDir    string
+	ApplicationsDir string
 }
 
 func main() {
 	configDir, err := os.UserConfigDir()
-	p(err)
+	handle(err)
 
 	cacheDir, err := os.UserCacheDir()
-	p(err)
+	handle(err)
+
+	dataDir := os.Getenv("XDG_DATA_HOME")
+	if dataDir == "" {
+		home, err := os.UserHomeDir()
+		handle(err)
+		dataDir = filepath.Join(home, ".local", "share", "applications")
+	}
 
 	opts := Options{
-		ConfigFile:    filepath.Join(configDir, "salamis", "extensions.toml"),
-		ExtensionsDir: filepath.Join(cacheDir, "salamis", "extensions"),
-		WorkspaceDir:  filepath.Join(cacheDir, "salamis", "workspaces"),
+		ConfigFile:      filepath.Join(configDir, "salamis", "extensions.toml"),
+		ExtensionsDir:   filepath.Join(cacheDir, "salamis", "extensions"),
+		WorkspaceDir:    filepath.Join(cacheDir, "salamis", "workspaces"),
+		ApplicationsDir: filepath.Join(dataDir),
 	}
 
 	args := os.Args[1:]

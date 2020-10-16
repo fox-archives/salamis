@@ -25,14 +25,14 @@ func doDownloadExtensions(opts Options) {
 		cmd := exec.Command("code", "--extensions-dir", opts.ExtensionsDir, "--install-extension", extension, "--force")
 		cmd.Stderr = os.Stderr
 		stdout, err := cmd.Output()
-		p(err)
+		handle(err)
 
 		fmt.Println(string(stdout))
 	}
 
 	// now, we have to rename all the files to remove the version number
 	dirs, err := ioutil.ReadDir(opts.ExtensionsDir)
-	p(err)
+	handle(err)
 
 	for _, dir := range dirs {
 		// if extension doesn't have version, it has already
@@ -51,7 +51,7 @@ func doDownloadExtensions(opts Options) {
 		new := filepath.Join(opts.ExtensionsDir, newName)
 
 		err := os.Rename(old, new)
-		p(err)
+		handle(err)
 
 		fmt.Printf("Renaming file: '%s'\n", new)
 	}
@@ -59,20 +59,20 @@ func doDownloadExtensions(opts Options) {
 
 func doRemoveExtensions(opts Options) {
 	err := os.RemoveAll(opts.ExtensionsDir)
-	p(err)
+	handle(err)
 
 	err = os.MkdirAll(opts.ExtensionsDir, 0755)
-	p(err)
+	handle(err)
 }
 
 func doSymlinkExtensions(opts Options) {
 	config := readConfig(opts)
 
 	err := os.RemoveAll(opts.WorkspaceDir)
-	p(err)
+	handle(err)
 
 	err = os.MkdirAll(opts.WorkspaceDir, 0755)
-	p(err)
+	handle(err)
 
 	if len(config.Workspaces) == 0 {
 		fmt.Println("You have no workspaces specified")
@@ -111,22 +111,13 @@ func doSymlinkExtensions(opts Options) {
 
 func doSymlinkRemove(opts Options) {
 	err := os.RemoveAll(opts.WorkspaceDir)
-	p(err)
+	handle(err)
 
 	err = os.MkdirAll(opts.WorkspaceDir, 0755)
-	p(err)
+	handle(err)
 }
 
 func doInstallXdgDesktopEntries(opts Options) {
-	home, _ := os.UserHomeDir()
-	dataDir := os.Getenv("XDG_DATA_HOME")
-	if dataDir == "" {
-		dataDir = filepath.Join(home, ".local", "share")
-	}
-	destDir := filepath.Join(dataDir, "applications")
-
-	fmt.Printf("Installing to '%s'\n", destDir)
-
 	type DesktopEntry struct {
 		Name                 string
 		ExtensionCacheFolder string
@@ -136,17 +127,17 @@ func doInstallXdgDesktopEntries(opts Options) {
 
 	for _, workspace := range readConfig(opts).Workspaces {
 		entry := &DesktopEntry{
-			Name:                 workspace.Name,
-			ExtensionCacheFolder: filepath.Join(home, ".cache", "salamis", "workspaces", workspace.Name),
-			Exec:                 "path",
-			Icon:                 "icon",
+			Name:          workspace.Name,
+			ExtensionsDir: opts.ExtensionsDir,
+			Exec:          "path",
+			Icon:          "icon",
 		}
 
 		tmpl, err := template.New("entry").Parse(`[Desktop Entry]
 Name={{.Name}} VSCode
 Comment=Code Editing. Redefined.
 GenericName=Text Editor
-Exec=/usr/share/code/code --no-sandbox --unity-launch {{.ExtensionCacheFolder}}
+Exec=/usr/share/code/code --no-sandbox --unity-launch {{.ExtensionsDir}}
 Icon=com.visualstudio.code
 Type=Application
 StartupNotify=false
@@ -155,36 +146,22 @@ Categories=Utility;TextEditor;Development;IDE;
 MimeType=text/plain;inode/directory;application/x-code-workspace;
 Actions=new-empty-window;
 Keywords=vscode;{{.Name}};`)
-		if err != nil {
-			panic(err)
-		}
+		handle(err)
 
 		var buf bytes.Buffer
 		err = tmpl.Execute(&buf, entry)
-		if err != nil {
-			panic(err)
-		}
+		handle(err)
 
-		ioutil.WriteFile(filepath.Join(destDir, "salamis."+strings.ToLower(entry.Name)+".desktop"), []byte(buf.String()), 0o644)
+		ioutil.WriteFile(filepath.Join(opts.ApplicationsDir, "salamis."+strings.ToLower(entry.Name)+".desktop"), []byte(buf.String()), 0o644)
 	}
 }
 
 func doRemoveXdgDesktopEntries(opts Options) {
-	home, _ := os.UserHomeDir()
-	dataDir := os.Getenv("XDG_DATA_HOME")
-	if dataDir == "" {
-		dataDir = filepath.Join(home, ".local", "share")
-	}
-	destDir := filepath.Join(dataDir, "applications")
+	matches, err := filepath.Glob(filepath.Join(opts.ApplicationsDir, "salamis.*"))
+	handle(err)
 
-	matches, err := filepath.Glob(filepath.Join(destDir, "salamis.*"))
-	if err != nil {
-		panic(err)
-	}
 	for _, file := range matches {
 		err := os.Remove(file)
-		if err != nil {
-			panic(err)
-		}
+		handle(err)
 	}
 }

@@ -25,7 +25,7 @@ func doInit(opts Options) {
 	}
 
 	configRaw, err := toml.Marshal(config)
-	p(err)
+	handle(err)
 
 	// ensure path to config file exists
 	err = os.MkdirAll(filepath.Dir(opts.ConfigFile), 0755)
@@ -37,7 +37,7 @@ func doInit(opts Options) {
 	file, err := os.OpenFile(opts.ConfigFile, os.O_CREATE|os.O_EXCL|os.O_RDWR, 0644)
 	defer func() {
 		err := file.Close()
-		p(err)
+		handle(err)
 	}()
 
 	if err != nil {
@@ -50,7 +50,7 @@ func doInit(opts Options) {
 	}
 
 	_, err = file.Write(configRaw)
-	p(err)
+	handle(err)
 }
 
 func doList(opts Options) {
@@ -79,7 +79,7 @@ func doEdit(opts Options) {
 	cmd.Stderr = os.Stderr
 
 	err := cmd.Run()
-	p(err)
+	handle(err)
 }
 
 func doCheck(opts Options) {
@@ -174,7 +174,7 @@ func doLaunch(opts Options, workspaceName string) {
 	cmd := exec.Command("code", "--extensions-dir", extensionsDir, ".")
 	cmd.Stderr = os.Stderr
 	stdout, err := cmd.Output()
-	p(err)
+	handle(err)
 
 	fmt.Println(stdout)
 }

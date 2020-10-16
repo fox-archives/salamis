@@ -29,7 +29,7 @@ type Config struct {
 	Workspaces []Workspace `toml:"workspaces"`
 }
 
-func p(err error) {
+func handle(err error) {
 	if err != nil {
 		panic(err)
 	}
@@ -48,7 +48,7 @@ func extensionHasVersion(str string) bool {
 
 func isFolderEmpty(path string) bool {
 	dirs, err := ioutil.ReadDir(path)
-	p(err)
+	handle(err)
 
 	if len(dirs) == 0 {
 		return true
@@ -65,10 +65,10 @@ func readConfig(opts Options) Config {
 		fmt.Println("Error: extensions.toml not found. Did you forget to init?")
 		os.Exit(1)
 	}
-	p(err)
+	handle(err)
 
 	err = toml.Unmarshal(configRaw, &config)
-	p(err)
+	handle(err)
 
 	return config
 }
@@ -80,7 +80,7 @@ func getVscodeExtensions() []string {
 
 	cmd.Stderr = os.Stderr
 	stdout, err := cmd.Output()
-	p(err)
+	handle(err)
 
 	return strings.Split(string(stdout), "\n")
 }
