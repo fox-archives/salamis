@@ -7,3 +7,5 @@ build:
 
 package:
 	dpkg-deb --build package salamis.deb
+
+install:

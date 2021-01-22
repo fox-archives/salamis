@@ -25,7 +25,10 @@ func main() {
 	if dataDir == "" {
 		home, err := os.UserHomeDir()
 		handle(err)
+
 		dataDir = filepath.Join(home, ".local", "share", "applications")
+	} else {
+		dataDir = filepath.Join(dataDir, "applications")
 	}
 
 	opts := Options{
