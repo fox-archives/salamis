@@ -16,7 +16,7 @@ repoData="$(
 		"https://api.github.com/repos/eankeen/salamis/releases/tags/$tag"
 )"
 
-releaseId="$(jq '.id' <<< $repoData)"
+releaseId="$(jq '.id' <<< "$repoData")"
 : ${releaseId:?"releaseId must be valid. Exiting"}
 
 curl \
