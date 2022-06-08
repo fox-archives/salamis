@@ -2,8 +2,6 @@
 
 Contextual vscode extension management
 
-- todo: make list also show all extensions that a workspace owns (via inspecting the tags)
-
 ## Problem
 
 - Many extensions are installed, but only a fraction are used per project. Domain/Language specific extensions are still loaded, even if they may not be applicable
@@ -29,24 +27,37 @@ Configuration File:
 name = "JavaScript"
 description = "JavaScript / TypeScript Development Environment"
 use = [
-        "core", "javascript"
+	"core", "javascript"
 ]
 
 [[extensions]]
 name = "editorconfig.editorconfig"
 tags = [
-        "core"
+	"core"
 ]
 
 [[extensions]]
 name = "esbenp.prettier-vscode"
 tags = [
-        "core"
+	"core"
 ]
 
 [[extensions]]
 name = "dbaeumer.vscode-eslint"
 tags = [
-        "javascript"
+	"javascript"
 ]
 ```
+
+## Usage
+
+```sh
+git clone https://github.com/hyperupcall/salamis
+cd ./salamis
+bake build
+./salamis
+```
+
+## Roadmap
+
+- Make list also show all extensions that a workspace owns (via inspecting the tags)
