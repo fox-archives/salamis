@@ -1,6 +1,6 @@
 package main
 
-import "github.com/eankeen/salamis/pkg"
+import "github.com/hyperupcall/salamis/pkg"
 
 func main() {
 	pkg.DoMain()

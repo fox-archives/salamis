@@ -1,4 +1,4 @@
-module github.com/eankeen/salamis
+module github.com/hyperupcall/salamis
 
 go 1.14
 
