@@ -111,9 +111,7 @@ func doCheck(opts Options) {
 		isGlobal := false
 
 		for _, globalExtension := range extensions {
-
 			if salamisExtension.Name == globalExtension {
-
 				isGlobal = true
 				continue
 			}
@@ -145,14 +143,12 @@ func doCheck(opts Options) {
 						continue g
 					}
 				}
-
 			}
 			if !inGroup {
 				fmt.Printf("- %s\n", tag)
 			}
 		}
 	}
-
 }
 
 func doLaunch(opts Options, workspaceName string) {
@@ -168,7 +164,6 @@ func doLaunch(opts Options, workspaceName string) {
 			os.Exit(1)
 		}
 		panic(err)
-
 	}
 
 	cmd := exec.Command("code", "--extensions-dir", extensionsDir, ".")

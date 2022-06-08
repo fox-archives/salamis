@@ -11,7 +11,7 @@ import (
 	"strings"
 )
 
-// downloads currently installed extensions
+// downloads currently installed extensions.
 func doExtensionsInstall(opts Options) {
 	currentExtensions := getVscodeExtensions()
 	for _, extension := range currentExtensions {

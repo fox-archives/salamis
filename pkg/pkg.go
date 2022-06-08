@@ -6,16 +6,12 @@ import (
 	"path/filepath"
 )
 
-// Options User-customizable
+// Options User-customizable.
 type Options struct {
 	ConfigFile      string
 	ExtensionsDir   string
 	WorkspaceDir    string
 	ApplicationsDir string
-}
-
-func main() {
-
 }
 
 func DoMain() {
